@@ -1,0 +1,90 @@
+</h3><h3 style="text-align: left;">ตัวอย่าง</h3>
+<html lang="th">
+<head>
+<meta charset="UTF-8"></meta>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+<title>Datepicker Thai Localization</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css" rel="stylesheet"></link>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+</head>
+<body>
+
+<input id="datePickerInput" type="text" />
+<button id="showCalendarButton">Show Calendar</button>
+
+<script>
+$(document).ready(function() {
+    var bookingDate;
+
+    // Localization for Thai language
+    $.datepicker.regional['th'] = {
+        closeText: 'ปิด',
+        prevText: '&#xAB;&#xA0;ย้อน',
+        nextText: 'ถัดไป&#xA0;&#xBB;',
+        currentText: 'วันนี้',
+        monthNames: ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+        'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'],
+        monthNamesShort: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
+        'ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'],
+        dayNames: ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'],
+        dayNamesShort: ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'],
+        dayNamesMin: ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'],
+        weekHeader: 'Wk',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['th']);
+
+    // Custom function to convert CE year to BE year
+    function toBuddhistYear(year) {
+        return year + 543;
+    }
+
+    // Initialize Datepicker with Thai localization and BE year conversion
+    $("#datePickerInput").datepicker({
+        dateFormat: 'dd MM yy',
+        beforeShow: function(input, inst) {
+            setTimeout(function() {
+                var buttonPane = $(input).datepicker("widget").find(".ui-datepicker-buttonpane");
+                var selectYear = inst.dpDiv.find('.ui-datepicker-year');
+                selectYear.each(function() {
+                    var year = parseInt($(this).text(), 10);
+                    $(this).text(toBuddhistYear(year));
+                });
+            }, 1);
+        },
+        onChangeMonthYear: function(year, month, inst) {
+            setTimeout(function() {
+                var selectYear = inst.dpDiv.find('.ui-datepicker-year');
+                selectYear.each(function() {
+                    var year = parseInt($(this).text(), 10);
+                    $(this).text(toBuddhistYear(year));
+                });
+            }, 1);
+        },
+        onSelect: function(dateText, inst) {
+            var selectedDate = $(this).datepicker('getDate');
+            var year = selectedDate.getFullYear();
+            var month = selectedDate.getMonth();
+            var day = selectedDate.getDate();
+            var buddhistYear = toBuddhistYear(year);
+
+            bookingDate = day + " " + $.datepicker.regional['th'].monthNames[month] + " " + buddhistYear;
+            console.log("Selected date (Thai): " + bookingDate);
+        }
+    });
+
+    // Open the calendar when clicking the button
+    $("#showCalendarButton").click(function() {
+        $("#datePickerInput").focus();
+    });
+});
+
+</script>
+
+</body>
+</html>
